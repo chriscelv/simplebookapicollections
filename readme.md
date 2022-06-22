@@ -1,13 +1,38 @@
-## Simple Book API Collection for API tests
+# Simple Book API Collection for API tests
 
 |VARIABLE|VALUE|
 |---|---|
 |baseUrl|https://simple-books-api.glitch.me|
-|accessToken|0bc105d04577a5f0f5d878c9a82625ec00ee7d593c8194d963c317d0b3ef5462|
+|accessToken|<YOUR TOKEN>|
 ---
-### List of Books
-GET `/books?type=non-fiction`
+## API Status
+GET `/status/`
+### Tests
+```
+pm.test("Status code is 200", function () {
+    pm.response.to.have.status(200);
+});
 
+const response = pm.response.json();
+
+console.log(response.status);
+console.log(response['status']);
+
+pm.test("Status should be OK", () => {
+    pm.expect(response.status).to.eql("OK");
+});
+
+postman.setNextRequest("List of books");
+```
+---
+## List of Books
+GET `/books?type=non-fiction`
+### Query Params
+|KEY|VALUE|
+|--|--|
+|type|non-fiction
+|limit|5|
+### Tests
 ```
 pm.test("Status code is 200", () => {
     pm.response.to.have.status(200);
@@ -23,3 +48,51 @@ pm.test("Book found", () => {
 pm.globals.set("bookId", book.id);
 
 ```
+---
+## Single Book
+GET `/books/:bookId`
+### Path Variables
+|KEY|VALUE|
+|--|--|
+|bookId|1|
+### Tests
+```
+pm.test("Status code is 200", () => {
+    pm.response.to.have.status(200);
+});
+const response = pm.response.json();
+
+pm.test("Is in stock", () => {
+    pm.expect(response['current-stock']).to.be.above(0);
+});
+```
+---
+## Order Book
+POST `/orders`
+### Body
+```
+{
+    "bookId": {{bookId}},
+    "customerName": "${{$randomFullName}}"
+}
+```
+---
+## All Book Orders
+GET `/orders`
+### Tests
+```
+    pm.test("Status code is 200", () => {
+    pm.response.to.have.status(200);
+});
+```
+---
+## Book Order
+GET `/orders/:orderId`
+### Tests
+```
+    pm.test("Status code is 200", () => {
+    pm.response.to.have.status(200);
+});
+```
+---
+
